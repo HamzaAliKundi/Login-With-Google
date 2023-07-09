@@ -1,31 +1,23 @@
-import { gapi } from "gapi-script";
-import { refreshTokenSetup } from "./refreshTokenSetup";
-import GoogleLogin from "react-google-login";
+import React from "react";
 import jwtDecode from "jwt-decode";
+import { GoogleLogin } from "@react-oauth/google";
+import { GoogleOAuthProvider } from "@react-oauth/google";
 
 function App() {
-  gapi.load("client:auth2", () => {
-    gapi.client.init({
-      clientId: "*****.apps.googleusercontent.com",
-      plugin_name: "chat",
-    });
-  });
-
-  const responseSuccessGoogle = (success) => {
-    const token = jwtDecode(success.tokenObj.id_token);
+  const successLoginWithGoogle = (e) => {
+    const token = jwtDecode(e.credential);
 
     const userObj = {
       name: token.name,
       email: token.email,
     };
 
-    console.log("User Obj : ", userObj);
+    console.log("User Object : ", userObj);
   };
 
-  const responseFailureGoogle = (failure) => {
-    console.log("first failure : ", failure);
+  const failureLoginWithGoogle = (e) => {
+    console.log("Error : ", e);
   };
-
   return (
     <>
       <div
@@ -39,14 +31,12 @@ function App() {
         }}
       >
         <div>
-          <GoogleLogin
-            clientId="340636402788-k287jmsa8kbmuhb3gi3ifdtg054vfu6l.apps.googleusercontent.com"
-            buttonText="Login With Google"
-            onSuccess={responseSuccessGoogle}
-            onFailure={responseFailureGoogle}
-            cookiePolicy={"single_host_origin"}
-            refreshTokenSetup={refreshTokenSetup}
-          />
+          <GoogleOAuthProvider clientId="201188651256-2blfps8odouqct7irmmh4gmn48s4lp1e.apps.googleusercontent.com">
+            <GoogleLogin
+              onSuccess={successLoginWithGoogle}
+              onError={failureLoginWithGoogle}
+            />
+          </GoogleOAuthProvider>
         </div>
       </div>
     </>
