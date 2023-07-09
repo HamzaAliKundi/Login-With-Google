@@ -2,9 +2,10 @@ import React from "react";
 import jwtDecode from "jwt-decode";
 import { GoogleLogin } from "@react-oauth/google";
 import { GoogleOAuthProvider } from "@react-oauth/google";
+import axios from "axios";
 
 function App() {
-  const successLoginWithGoogle = (e) => {
+  const successLoginWithGoogle = async (e) => {
     const token = jwtDecode(e.credential);
 
     const userObj = {
@@ -12,7 +13,15 @@ function App() {
       email: token.email,
     };
 
-    console.log("User Object : ", userObj);
+    await axios
+      .post("http://localhost:8000/api/register/client", userObj)
+      .then((res) => {
+        localStorage.setItem("token", res.data.token);
+        // navigate("here will bt the path where user have to navigate after login")
+      })
+      .catch((err) => {
+        console.log("Error: " + err.message);
+      });
   };
 
   const failureLoginWithGoogle = (e) => {
